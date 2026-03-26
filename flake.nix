@@ -24,7 +24,6 @@
         modules = [
            { nixpkgs.config.allowUnfree = true; }
           ./hosts/t14/configuration.nix
-          ./system/firefox.nix          
           # Подключаем Home Manager как модуль системы
           home-manager.nixosModules.home-manager
           {
