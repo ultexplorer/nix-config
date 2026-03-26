@@ -20,8 +20,9 @@
   # ===== ФИКСЫ ДЛЯ RYZEN (Оптимизировано для ядра 6.x+) =====
   boot.kernelParams = [
     "amdgpu.sg_display=0" # Оставляем, лечит фризы на Cezanne
-    "amd_pstate=active"   # ВКЛЮЧАЕМ современное управление питанием
-    # "idle=nomwait" -> УДАЛЕНО (причина ребутов)
+    "amd_pstate=passive"   # ВКЛЮЧАЕМ современное управление питанием
+    "processor.max_cstate=1"
+    "idle=nomwait" -> УДАЛЕНО (причина ребутов)
     # "amdgpu.dcdebugmask" -> УДАЛЕНО (устарело)
   ];
 
