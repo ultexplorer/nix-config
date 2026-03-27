@@ -5,7 +5,6 @@
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
-    # Чистим extraPackages, оставляем только VA-API для браузера
     extraPackages = with pkgs; [
       libva
       libva-utils
@@ -14,19 +13,17 @@
     ];
   };
 
-  # Ранняя загрузка драйвера GPU (оставляем, это полезно)
+  # Ранняя загрузка драйвера GPU (важно для плавности)
   boot.initrd.kernelModules = [ "amdgpu" ];
 
-  # ===== ФИКСЫ ДЛЯ RYZEN (Оптимизировано для ядра 6.x+) =====
+  # ===== ФИКСЫ ДЛЯ СТАБИЛЬНОСТИ RYZEN =====
   boot.kernelParams = [
-    "amdgpu.sg_display=0" # Оставляем, лечит фризы на Cezanne
-    "amd_pstate=passive"   # ВКЛЮЧАЕМ современное управление питанием
-    "processor.max_cstate=1"
-    "idle=nomwait" # УДАЛЕНО (причина ребутов)
-    # "amdgpu.dcdebugmask" -> УДАЛЕНО (устарело)
+    "amdgpu.sg_display=0"    # Лечит фризы графики на Cezanne
+    "processor.max_cstate=1" # Ограничиваем глубокий сон ядер (защита от ребутов)
+    "pcie_aspm=off"           # ВЫКЛЮЧАЕМ управление питанием шины (главный подозреваемый)
   ];
 
-  # Микрокод CPU - критично для безопасности и стабильности
+  # Микрокод CPU - критично для стабильности
   hardware.cpu.amd.updateMicrocode = true;
 
   # ===== ЗВУК (PipeWire) =====
@@ -39,6 +36,8 @@
   };
 
   # ===== THINKPAD & FIRMWARE =====
-  # hardware.acpilight.enable = true; # Если не пользуешься яркостью через xbacklight, можно убрать
-  hardware.enableRedistributableFirmware = true; # Важнее для Wi-Fi и Bluetooth
+  hardware.enableRedistributableFirmware = true;
+
+  # Оптимизация для SSD (важно для NVMe на ThinkPad)
+  services.fstrim.enable = true;
 }
