@@ -2,6 +2,7 @@
 {
   imports = [ 
     ./hardware-configuration.nix
+    ../../modules/desktop/ly.nix
     ../../modules/desktop/xfce.nix
     ../../modules/system/boot.nix
     ../../modules/system/t14-amd.nix
