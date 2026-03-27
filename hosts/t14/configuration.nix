@@ -4,6 +4,7 @@
     ./hardware-configuration.nix
     ../../modules/desktop/ly.nix
     ../../modules/desktop/xfce.nix
+    ../../modules/desktop/wayfire.nix
     ../../modules/system/boot.nix
     ../../modules/system/t14-amd.nix
     ../../modules/system/common-packages.nix
