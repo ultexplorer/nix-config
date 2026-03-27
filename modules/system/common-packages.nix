@@ -2,22 +2,15 @@
 
 {
   environment.systemPackages = with pkgs; [
-    # Системное
+    # --- БАЗОВЫЙ НАБОР (ОБЩЕЕ) ---
+    tree             # <--- ВОТ ОН, РОДНОЙ!
     git
-    vim
     wget
     curl
-    pciutils
-    usbutils
-    
-    # Мониторинг (то, что мы хотели)
-    btop
-    powertop
-    amdgpu_top
-    libva-utils  # для vainfo
+    vim              # (или nano/neovim, что ты используешь)
+    htop
     fastfetch
+    
+    # Сюда же можно со временем докинуть браузер или файловый менеджер
   ];
-
-  # Включаем экспериментальные фичи везде
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 }
