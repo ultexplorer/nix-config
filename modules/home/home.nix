@@ -1,24 +1,32 @@
 { config, pkgs, userName, lib, ... }:
 
+let
+  # ХАРДКОРНЫЙ ВЫБОР (меняем здесь вручную для теста)
+  selectedWM = "xfce"; 
+
+  # Словарь команд запуска
+  wmCommands = {
+    xfce = "exec dbus-run-session startxfce4";
+    # Добавим заглушку для теста логики
+    test = "exec echo 'Hello NixOS' > /tmp/nix-test.txt"; 
+  };
+in
 {
   home.username = userName;
   home.homeDirectory = lib.mkForce "/home/${userName}";
   home.stateVersion = "24.11";
 
-  # Тот самый блок, про который ты спрашивал:
-  # home.file.".xinitrc".text = ''
-  # Запуск самой оболочки Xfce
-  #exec dbus-launch --exit-with-session startxfce4  '';
-
+  # Генерируем .xinitrc
   home.file.".xinitrc".text = ''
-     exec dbus-run-session startxfce4
+    # Настройки для X-сервера
+    xsetroot -cursor_name left_ptr &
+    
+    # Запуск выбранной оболочки из словаря
+    ${wmCommands.${selectedWM}}
   '';
 
-
-  # Добавляем необходимые пакеты в профиль пользователя
   home.packages = with pkgs; [
-#    xorg.xinit  # предоставляет команду startx
-    dbus        # нужен для dbus-launch
+    dbus
   ];
 
   programs.home-manager.enable = true;
