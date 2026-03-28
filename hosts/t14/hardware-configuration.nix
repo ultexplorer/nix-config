@@ -28,4 +28,19 @@
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+
+  ###############################################################################################
+
+  # 1. Включаем поддержку Bluetooth на уровне ядра и системы
+  hardware.bluetooth.enable = true;
+  hardware.bluetooth.powerOnBoot = true; # Чтобы не включать вручную каждый раз
+
+  # 2. Включаем менеджер Blueman
+  services.blueman.enable = true;
+
+  # 3. (Опционально) Если хочешь, чтобы иконка была в трее Xfce
+  environment.systemPackages = with pkgs; [
+    xfce.xfce4-pulseaudio-plugin # Хорошо работает в паре с Bluetooth для звука
+  ];
+
 }
