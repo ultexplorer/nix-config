@@ -1,4 +1,4 @@
-{ config, pkgs, userName, ... }:
+{ config, pkgs,lib, userName, ... }:
 {
   imports = [
     # ./hardware-configuration.nix  <-- УДАЛЯЕМ ИЛИ КОММЕНТИРУЕМ ЭТУ СТРОКУ! 
@@ -12,6 +12,13 @@
     ../../modules/system/common-packages.nix
     ../../modules/system/hw-tools.nix
   ];
+ 
+  ##########################################################################
+  hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  hardware.enableRedistributableFirmware = true;
+
+  ##########################################################################  
+
 
   # Порталы для работы приложений (скриншоты, шаринг экрана и т.д.)
   xdg.portal = {
