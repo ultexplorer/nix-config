@@ -1,40 +1,49 @@
 {
-  description = "My Managed NixOS Flake";
+  description = "My Managed NixOS Flake with Disko Support";
 
   inputs = {
-    # Переключаемся на стабильную ветку, где нет ошибок в пакетах
+    # Стабильная ветка системы
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
 
-    # Home Manager должен соответствовать версии системы
+    # Добавляем Disko для автоматической разметки
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Home Manager
     home-manager = {
       url = "github:nix-community/home-manager/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, disko, ... }@inputs:
     let
       userName = "igor";
       system = "x86_64-linux";
     in {
       nixosConfigurations.t14 = nixpkgs.lib.nixosSystem {
         inherit system;
-        # Передаем переменные внутрь модулей
         specialArgs = { inherit inputs userName; };
         modules = [
-           { nixpkgs.config.allowUnfree = true; }
+          # 1. Модуль Disko
+          disko.nixosModules.disko
+          # 2. Твой конфиг разметки (создай этот файл рядом)
+          ./hosts/t14/disko-config.nix
+          
+          { nixpkgs.config.allowUnfree = true; }
+          
           ./hosts/t14/configuration.nix
-          # Подключаем Home Manager как модуль системы
+          
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.extraSpecialArgs = { inherit userName; };
-            # Импортируем настройки пользователя
             home-manager.users.${userName} = import ./modules/home/home.nix;
           }
         ];
       };
     };
 }
-
