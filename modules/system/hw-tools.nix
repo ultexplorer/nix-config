@@ -14,5 +14,12 @@
     amdgpu_top
     glxinfo
     vulkan-tools
+
+    ######################################
+    cpupower-gui
+    winetricks
+    protonup-qt
+    clinfo
+    glxinfo
   ];
 }

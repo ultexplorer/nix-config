@@ -1,43 +1,52 @@
 { config, pkgs, ... }:
 
 {
-  # ===== ГРАФИКА AMD (Ryzen 5000 / Cezanne) =====
+  # --- Ядро и параметры (Ryzen 5000 + NTSync + SteamOS 3.8 fixes) ---
+  boot = {
+    kernelPackages = pkgs.linuxPackages_latest;
+    kernelParams = [
+      "amd_pstate=active"
+      "ntsync.enabled=1"
+      "zswap.enabled=1"
+      "zswap.compressor=lz4"
+      "zswap.max_pool_percent=25"
+      "preempt=full"
+      "threadirqs"
+    ];
+
+    kernel.sysctl = {
+      "vm.swappiness" = 10;
+      "vm.vfs_cache_pressure" = 50;
+      "vm.max_map_count" = 2147483642;
+      "kernel.sched_autogroup_enabled" = 1;
+    };
+  };
+
+  # --- Подкачка (Swap) для работы Zswap ---
+  swapDevices = [ {
+    device = "/var/lib/swapfile";
+    size = 8192;
+  } ];
+
+  # --- Графика и OpenCL для Photoshop ---
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
     extraPackages = with pkgs; [
-      libva
-      libva-utils
-      libvdpau-va-gl
-      vaapiVdpau
+      rocmPackages.clr.icd
+      amdvlk
     ];
   };
 
-  # Ранняя загрузка драйвера GPU (важно для плавности)
-  boot.initrd.kernelModules = [ "amdgpu" ];
+  # --- Низкая задержка звука и планировщик диска ---
+  services.udev.extraRules = ''
+    ACTION=="add|change", KERNEL=="nvme*", ATTR{queue/scheduler}="kyber"
+  '';
 
-  # ===== ФИКСЫ ДЛЯ СТАБИЛЬНОСТИ RYZEN =====
-  boot.kernelParams = [
-    "amdgpu.sg_display=0"    # Лечит фризы графики на Cezanne
-    "processor.max_cstate=1" # Ограничиваем глубокий сон ядер (защита от ребутов)
-    "pcie_aspm=off"           # ВЫКЛЮЧАЕМ управление питанием шины (главный подозреваемый)
-  ];
-
-  # Микрокод CPU - критично для стабильности
-  hardware.cpu.amd.updateMicrocode = true;
-
-  # ===== ЗВУК (PipeWire) =====
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
+  services.pipewire.extraConfig.pipewire."92-low-latency" = {
+    "context.properties" = {
+      "default.clock.rate" = 48000;
+      "default.clock.quantum" = 128;
+    };
   };
-
-  # ===== THINKPAD & FIRMWARE =====
-  hardware.enableRedistributableFirmware = true;
-
-  # Оптимизация для SSD (важно для NVMe на ThinkPad)
-  services.fstrim.enable = true;
 }
