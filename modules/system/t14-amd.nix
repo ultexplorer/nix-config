@@ -1,12 +1,6 @@
 { config, pkgs, ... }:
 
 {
-  ###################################################################
-  
-   services.udev.extraRules = ''
-    ACTION=="add", SUBSYSTEM=="leds", KERNEL=="platform::micmute", ATTR{brightness}="0"
-  '';
-  
   # --- Ядро и параметры (Ryzen 5000 + NTSync + SteamOS 3.8 fixes) ---
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
@@ -47,6 +41,7 @@
   # --- Низкая задержка звука и планировщик диска ---
   services.udev.extraRules = ''
     ACTION=="add|change", KERNEL=="nvme*", ATTR{queue/scheduler}="kyber"
+    ACTION=="add", SUBSYSTEM=="leds", KERNEL=="platform::micmute", ATTR{brightness}="0"
   '';
 
   services.pipewire.extraConfig.pipewire."92-low-latency" = {
