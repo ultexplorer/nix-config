@@ -1,6 +1,12 @@
 { config, pkgs, ... }:
 
 {
+  ###################################################################
+  
+   services.udev.extraRules = ''
+    ACTION=="add", SUBSYSTEM=="leds", KERNEL=="platform::micmute", ATTR{brightness}="0"
+  '';
+  
   # --- Ядро и параметры (Ryzen 5000 + NTSync + SteamOS 3.8 fixes) ---
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
