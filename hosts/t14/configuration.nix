@@ -66,4 +66,7 @@
     dates = "weekly";
     options = "--delete-older-than 7d";
   };
+  
+  time.timeZone = "Europe/Berlin";
+  i18n.defaultLocale = "en_US.UTF-8";
 }	
